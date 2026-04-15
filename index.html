@@ -1442,6 +1442,11 @@
         background: linear-gradient(to bottom, rgba(13, 28, 46, .95) 0%, rgba(13, 28, 46, .88) 30%, rgba(13, 28, 46, .5) 60%, rgba(13, 28, 46, .1) 85%, transparent 100%)
       }
 
+      #coverMap {
+        height: 100% !important;
+        bottom: auto !important
+      }
+
       .cover-dots {
         width: 100%;
         opacity: .4
@@ -2460,7 +2465,7 @@
       const coverMap = L.map('coverMap', {
         zoomControl: false,
         attributionControl: false,
-        center: [1.3180, 103.9000],
+        center: [1.3200, 103.9000],
         zoom: 15
       });
 
