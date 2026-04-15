@@ -260,6 +260,8 @@ body.chrome-light .dot.on{background:var(--coral)}
 .contact-box .ct{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:600}
 .contact-box strong{font-size:14px;color:#fff;font-weight:600}
 .contact-box small{font-size:10px;color:rgba(255,255,255,.65)}
+.wa-btn{display:inline-flex;align-items:center;gap:6px;background:#25D366;color:#fff;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;text-decoration:none;margin-top:10px;white-space:nowrap}
+.s7-contact{display:none}
 
 /* ============================================================
    MOBILE RESPONSIVE  ≤ 767px
@@ -275,7 +277,7 @@ body.chrome-light .dot.on{background:var(--coral)}
   .nbtn{font-size:24px;padding:6px 10px}
 
   /* s1 cover */
-  #s1{padding:80px 24px 170px;justify-content:flex-start;align-items:flex-start}
+  #s1{padding:80px 24px 470px;justify-content:flex-start;align-items:flex-start}
   .cover-dots{width:100%;opacity:.4}
   .cover-inner{max-width:100%}
   .cover-inner .h1{font-size:clamp(42px,11vw,58px)}
@@ -294,7 +296,7 @@ body.chrome-light .dot.on{background:var(--coral)}
   #s3{padding:88px 24px 160px;justify-content:flex-start}
   .intel-grid{grid-template-columns:1fr}
   .compare-box{grid-template-columns:1fr 1fr}
-  .output-cards{grid-template-columns:1fr 1fr}
+  .output-cards{grid-template-columns:1fr}
 
   /* s4 */
   #s4{padding:88px 24px 160px;justify-content:flex-start}
@@ -322,6 +324,14 @@ body.chrome-light .dot.on{background:var(--coral)}
   #s8{padding:88px 24px 160px;justify-content:flex-start}
   .priv-grid{grid-template-columns:1fr}
   .contact-box{width:100%}
+
+  /* s5 — show full image, overlap camp-left */
+  #s5 .camp-left{position:relative;z-index:1}
+  #s5 .camp-right{height:auto;overflow:visible;margin-top:-40px}
+  #s5 .camp-right img{position:static!important;width:100%!important;height:320px;display:block;object-fit:cover;border-radius:12px}
+
+  /* s7 contact CTA — mobile only */
+  .s7-contact{display:flex;justify-content:center;margin-top:24px;margin-bottom:8px}
 }
 </style>
 </head>
@@ -679,7 +689,38 @@ body.chrome-light .dot.on{background:var(--coral)}
 </div>
 
 <!-- =========================================================
-     SLIDE 7: PARTNERSHIP  (all partners — tab auto-selected)
+     SLIDE 7: DATA PRIVACY  (all partners)
+     ========================================================= -->
+<div class="slide" id="s8" data-partners="all" data-theme="dark">
+  <div class="eyebrow">Data Governance</div>
+  <h2 class="h2">Data sponsored, owned and governed by Rally AI.</h2>
+  <div class="priv-grid">
+    <div class="pcard">
+      <div class="pi">&#128373;</div>
+      <h4>Consumer Privacy</h4>
+      <p>Fully anonymised like mystery shoppers. Merchants receive only segment profiles — never personal data or contact details. Diners consent explicitly.</p>
+    </div>
+    <div class="pcard">
+      <div class="pi">&#127978;</div>
+      <h4>Data Ownership</h4>
+      <p>Merchants provide zero data. All intelligence is sponsored, owned and governed by Rally AI — merchants access curated reports, never raw data.</p>
+    </div>
+    <div class="pcard">
+      <div class="pi">&#129302;</div>
+      <h4>AI Safety</h4>
+      <p>Human oversight prevents algorithmic bias, with transparent insight explanations and regularly audited training data.</p>
+    </div>
+    <div class="pcard">
+      <div class="pi">&#128300;</div>
+      <h4>Methodology</h4>
+      <p>Our data methodology is reviewed and supported under the Good Design Research Grant — institutional validation of our approach and mission.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- =========================================================
+     SLIDE 8: PARTNERSHIP  (all partners — tab auto-selected)
      ========================================================= -->
 <div class="slide" id="s7" data-partners="all" data-theme="dark">
   <div class="eyebrow">Partnership Opportunity</div>
@@ -775,43 +816,15 @@ body.chrome-light .dot.on{background:var(--coral)}
       </div>
     </div>
   </div>
-</div>
 
-<!-- =========================================================
-     SLIDE 8: DATA PRIVACY  (all partners)
-     ========================================================= -->
-<div class="slide" id="s8" data-partners="all" data-theme="dark">
-  <div class="eyebrow">Data Governance</div>
-  <h2 class="h2">Data sponsored, owned and governed by Rally AI.</h2>
-  <div class="priv-grid">
-    <div class="pcard">
-      <div class="pi">&#128373;</div>
-      <h4>Consumer Privacy</h4>
-      <p>Fully anonymised like mystery shoppers. Merchants receive only segment profiles — never personal data or contact details. Diners consent explicitly.</p>
-    </div>
-    <div class="pcard">
-      <div class="pi">&#127978;</div>
-      <h4>Data Ownership</h4>
-      <p>Merchants provide zero data. All intelligence is sponsored, owned and governed by Rally AI — merchants access curated reports, never raw data.</p>
-    </div>
-    <div class="pcard">
-      <div class="pi">&#129302;</div>
-      <h4>AI Safety</h4>
-      <p>Human oversight prevents algorithmic bias, with transparent insight explanations and regularly audited training data.</p>
-    </div>
-    <div class="pcard">
-      <div class="pi">&#128300;</div>
-      <h4>Methodology</h4>
-      <p>Our data methodology is reviewed and supported under the Good Design Research Grant — institutional validation of our approach and mission.</p>
-    </div>
-  </div>
-  <div class="priv-btm">
+  <div class="s7-contact">
     <div class="contact-box">
       <div class="ct">Contact</div>
       <strong>Ju Hu Soh</strong>
       <small>CEO &amp; Co-founder</small>
       <small style="margin-top:6px">juhu@letsrally.ai</small>
       <small>+65 9724 2915</small>
+      <a href="https://wa.me/6597242915" target="_blank" class="wa-btn">&#128172; WhatsApp</a>
     </div>
   </div>
 </div>
@@ -895,6 +908,18 @@ function restartChartAnims(slide) {
   });
 }
 
+let chartObs = null;
+function setupMobileCharts() {
+  if (!window.matchMedia('(max-width:767px)').matches) return;
+  if (chartObs) chartObs.disconnect();
+  const s3 = document.getElementById('s3');
+  s3.querySelectorAll('[data-anim]').forEach(el => { el.style.animation = 'none'; });
+  chartObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) restartChartAnims(e.target); });
+  }, { threshold: 0.15, root: s3 });
+  s3.querySelectorAll('.ocrd').forEach(c => chartObs.observe(c));
+}
+
 function go(n) {
   slides[cur].classList.remove('active');
   dotsEl.children[cur].classList.remove('on');
@@ -904,7 +929,11 @@ function go(n) {
   dotsEl.children[cur].classList.add('on');
   ctrEl.textContent = (cur + 1) + ' / ' + N;
   applyTheme(slides[cur]);
-  restartChartAnims(slides[cur]);
+  if (window.matchMedia('(max-width:767px)').matches && slides[cur].id === 's3') {
+    setupMobileCharts();
+  } else {
+    restartChartAnims(slides[cur]);
+  }
 }
 function nav(d) { go(cur + d); }
 
