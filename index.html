@@ -276,11 +276,10 @@ body.chrome-light .dot.on{background:var(--coral)}
   .chrome-nav{bottom:18px;gap:12px}
   .nbtn{font-size:24px;padding:6px 10px}
 
-  /* s1 cover — content first, map scrolls into view below */
-  #s1{padding:72px 24px 100px;flex-direction:column;justify-content:flex-start;align-items:flex-start}
+  /* s1 cover — content first, map below in scroll flow (DOM reordered by JS) */
+  #s1{padding:72px 24px 60px;flex-direction:column;justify-content:flex-start;align-items:flex-start}
   #s1::before{display:none}
-  #s1 .cover-inner{order:1}
-  #coverMap{order:2;position:static!important;height:min(360px,48vh);width:100%;flex-shrink:0;margin-top:24px;border-radius:14px;overflow:hidden;z-index:0;background:var(--navy)}
+  #coverMap{position:relative!important;inset:auto!important;height:min(360px,48vh);width:100%;flex-shrink:0;margin-top:24px;border-radius:14px;overflow:hidden;z-index:0;background:var(--navy)}
   .cover-dots{width:100%;opacity:.4}
   .cover-inner{max-width:100%}
   .cover-inner .h1{font-size:clamp(42px,11vw,58px)}
@@ -833,6 +832,14 @@ body.chrome-light .dot.on{background:var(--coral)}
 </div>
 
 </div><!-- /deck -->
+
+<script>
+// On mobile: move coverMap to end of s1 BEFORE Leaflet initialises
+// so Leaflet measures it in its final static position
+if (window.matchMedia('(max-width:767px)').matches) {
+  document.getElementById('s1').appendChild(document.getElementById('coverMap'));
+}
+</script>
 
 <script>
 // ---- PARTNER VERSIONING ----
