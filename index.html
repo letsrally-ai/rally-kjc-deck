@@ -276,10 +276,9 @@ body.chrome-light .dot.on{background:var(--coral)}
   .chrome-nav{bottom:18px;gap:12px}
   .nbtn{font-size:24px;padding:6px 10px}
 
-  /* s1 cover — content first, map below in scroll flow (DOM reordered by JS) */
-  #s1{padding:72px 24px 60px;flex-direction:column;justify-content:flex-start;align-items:flex-start}
-  #s1::before{display:none}
-  #coverMap{position:relative!important;inset:auto!important;height:min(360px,48vh);width:100%;flex-shrink:0;margin-top:24px;border-radius:14px;overflow:hidden;z-index:0;background:var(--navy)}
+  /* s1 cover — map is full-bleed background, vertical gradient fades as user scrolls */
+  #s1{padding:80px 24px 320px;align-items:flex-start}
+  #s1::before{background:linear-gradient(to bottom,rgba(13,28,46,.95) 0%,rgba(13,28,46,.88) 30%,rgba(13,28,46,.5) 60%,rgba(13,28,46,.1) 85%,transparent 100%)}
   .cover-dots{width:100%;opacity:.4}
   .cover-inner{max-width:100%}
   .cover-inner .h1{font-size:clamp(42px,11vw,58px)}
@@ -834,14 +833,6 @@ body.chrome-light .dot.on{background:var(--coral)}
 </div><!-- /deck -->
 
 <script>
-// On mobile: move coverMap to end of s1 BEFORE Leaflet initialises
-// so Leaflet measures it in its final static position
-if (window.matchMedia('(max-width:767px)').matches) {
-  document.getElementById('s1').appendChild(document.getElementById('coverMap'));
-}
-</script>
-
-<script>
 // ---- PARTNER VERSIONING ----
 // URL: ?p=kjcba | ?p=alibabar | ?p=anywheel | (none = internal, all slides)
 const PARTNER_NAMES = {
@@ -943,9 +934,6 @@ function go(n) {
     setupMobileCharts();
   } else {
     restartChartAnims(slides[cur]);
-  }
-  if (window.matchMedia('(max-width:767px)').matches && slides[cur].id === 's1') {
-    setTimeout(() => window.invalidateCoverMap && window.invalidateCoverMap(), 100);
   }
 }
 function nav(d) { go(cur + d); }
