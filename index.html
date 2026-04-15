@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rally AI × Katong–Joo Chiat 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+/*
+  PARTNER VERSIONING
+  Share with: ?p=kjcba | ?p=alibabar | ?p=anywheel
+  No param = internal (all slides visible)
+
+  Slide visibility:
+    s1–s5  → all partners
+    s6     → kjcba, alibabar  (merchant onboarding; not relevant for Anywheel platform partner)
+    s7     → all (auto-selects partner tab, hides others)
+    s8     → all
+*/
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --navy:#0D1C2E;
+  --navy2:#172538;
+  --coral:#C94F32;
+  --gold:#D9961F;
+  --teal:#1E7260;
+  --cream:#F7EFE0;
+  --cream2:#EDE3CF;
+  --muted:rgba(247,239,224,0.55);
+  --muted2:rgba(247,239,224,0.25);
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--navy);font-family:'DM Sans',sans-serif}
+
+/* ---- DECK SHELL ---- */
+.deck{position:relative;width:100vw;height:100vh}
+.slide{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease;overflow:hidden;padding-bottom:72px}
+.slide.active{opacity:1;pointer-events:all}
+
+/* ---- CHROME ---- */
+.chrome-logo{position:fixed;top:22px;left:28px;z-index:200;display:flex;align-items:center;gap:9px}
+.logo-mark{width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.logo-mark img{width:100%;height:100%;object-fit:contain}
+.logo-text{font-size:12px;font-weight:600;color:var(--cream);letter-spacing:.06em;transition:color .3s}
+.chrome-counter{position:fixed;top:26px;right:28px;z-index:200;font-size:11px;letter-spacing:.12em;color:var(--muted);transition:color .3s}
+.chrome-nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;align-items:center;gap:18px;background:rgba(13,28,46,.80);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(247,239,224,.08);border-radius:40px;padding:8px 16px;transition:background .3s,border-color .3s}
+
+/* Light-slide chrome overrides */
+body.chrome-light .logo-text{color:var(--navy)}
+body.chrome-light .chrome-counter{color:rgba(13,28,46,.45)}
+body.chrome-light .chrome-nav{background:rgba(242,239,227,.88);border-color:rgba(13,28,46,.10)}
+body.chrome-light .nbtn{color:var(--navy)}
+body.chrome-light .nbtn:hover{color:var(--coral)}
+body.chrome-light .dot{background:rgba(13,28,46,.18)}
+body.chrome-light .dot.on{background:var(--coral)}
+.dots{display:flex;gap:6px}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(247,239,224,.25);cursor:pointer;transition:all .3s}
+.dot.on{background:var(--gold);width:18px;border-radius:3px}
+.nbtn{border:none;border-radius:0;background:transparent;color:var(--cream);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:color .2s;padding:0;line-height:1;transform:translateY(-2px)}
+.nbtn:hover{color:var(--gold)}
+
+/* ---- COMMON ---- */
+.eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:12px}
+.h1{font-family:'Playfair Display',serif;font-size:clamp(28px,3.8vw,54px);line-height:1.08;font-weight:700}
+.h2{font-family:'Playfair Display',serif;font-size:clamp(28px,2.8vw,38px);line-height:1.12;font-weight:700}
+.body{font-size:13px;line-height:1.7;color:var(--muted)}
+
+/* ============================================================
+   SLIDE 1 — COVER
+   ============================================================ */
+#s1{background:var(--navy);display:flex;align-items:center;justify-content:flex-start;padding:90px 80px}
+#s1::before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to right,rgba(13,28,46,.90) 0%,rgba(13,28,46,.72) 48%,rgba(13,28,46,.18) 100%)}
+#coverMap{position:absolute;inset:0;z-index:0}
+.leaflet-control-attribution{display:none!important}
+.leaflet-control-zoom{display:none!important}
+.cover-inner{position:relative;z-index:2;max-width:580px}
+.cover-tag{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(217,150,31,.35);border-radius:20px;padding:6px 14px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:26px;font-weight:600}
+.cover-inner .h1{color:var(--cream);margin-bottom:18px}
+.cover-inner .h1 em{color:var(--coral);font-style:italic}
+.cover-sub{font-size:14px;line-height:1.7;color:var(--muted);max-width:440px;margin-bottom:42px}
+.cover-badges{display:flex;flex-wrap:wrap;gap:10px}
+.cbadge{display:flex;align-items:center;gap:8px;background:rgba(247,239,224,.05);border:1px solid rgba(247,239,224,.10);border-radius:8px;padding:9px 14px;font-size:11px;color:var(--cream);font-weight:500}
+.cbadge-ic{font-size:14px}
+/* partner label shown on cover when ?p= is set */
+.partner-label{display:none;margin-bottom:20px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--coral);font-weight:600}
+.partner-label.visible{display:block}
+
+/* ============================================================
+   SLIDE 2 — WHAT IS RALLY
+   ============================================================ */
+#s2{background:var(--cream);display:flex;align-items:stretch;padding:0}
+#s2::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--coral),var(--gold))}
+.s2-left{flex:1;padding:80px 60px 100px;display:flex;flex-direction:column;justify-content:center}
+.s2-left .eyebrow{color:var(--coral)}
+.s2-left .h2{color:var(--navy);margin-bottom:20px}
+.s2-left p{font-size:13.5px;line-height:1.75;color:#3D4D5C;margin-bottom:16px}
+.stat-section-title{font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-weight:600;color:var(--coral);margin-top:22px;margin-bottom:10px}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scard{background:var(--navy);border-radius:10px;padding:18px}
+.scard .n{font-family:'Playfair Display',serif;font-size:32px;color:var(--gold);line-height:1;margin-bottom:5px}
+.scard .insight-n{font-size:17px;line-height:1.35;font-style:italic;margin-bottom:10px}
+.scard .l{font-size:11px;color:rgba(247,239,224,.6);line-height:1.4}
+.scard .use-case{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:8px;opacity:.8}
+.s2-right{width:340px;background:var(--coral);display:flex;flex-direction:column;justify-content:center;padding:60px 44px 140px}
+.qm{font-family:'Playfair Display',serif;font-size:72px;line-height:.65;color:rgba(255,255,255,.25);margin-bottom:18px}
+.quote-text{font-family:'Playfair Display',serif;font-size:20px;line-height:1.5;color:#fff;font-style:italic;margin-bottom:28px}
+.quote-src{font-size:11px;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase}
+.ds-pill{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.15);border-radius:8px;padding:9px 13px;font-size:11px;color:#fff;margin-top:28px;border:1px solid rgba(255,255,255,.2)}
+
+/* ---- Chart animations ---- */
+@keyframes cLine{to{stroke-dashoffset:0}}
+@keyframes cPop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes cFade{from{opacity:0}to{opacity:1}}
+@keyframes cGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+
+/* ============================================================
+   SLIDE 3 — INTELLIGENCE
+   ============================================================ */
+#s3{background:var(--navy2);display:flex;flex-direction:column;padding:88px 80px 64px;justify-content:center}
+#s3 .eyebrow{color:var(--gold)}
+#s3 .h2{color:var(--cream);margin-bottom:32px}
+.intel-grid{display:grid;grid-template-columns:1fr 1.55fr;gap:28px;flex:1}
+.sources-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px}
+.sources-box h4{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;font-weight:600}
+.output-label{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600}
+.src-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.src-item:last-child{border-bottom:none;padding-bottom:0}
+.src-ic{width:36px;height:36px;border-radius:8px;background:rgba(201,79,50,.18);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.src-item h5{font-size:13px;color:var(--cream);font-weight:600;margin-bottom:3px}
+.src-item p{font-size:11px;color:var(--muted);line-height:1.45}
+.intel-right{display:flex;flex-direction:column;gap:14px}
+.compare-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.cmp h5{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600}
+.cmp.hi h5{color:var(--gold)}
+.cmp-item{font-size:11px;color:rgba(247,239,224,.4);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:7px}
+.cmp-item::before{content:'—';font-size:9px;flex-shrink:0}
+.cmp.hi .cmp-item{color:var(--cream)}
+.cmp.hi .cmp-item::before{content:'✦';color:var(--gold);font-size:8px}
+.output-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ocrd{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
+.ocrd .oi{font-size:20px;margin-bottom:8px}
+.ocrd h5{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:3px}
+.ocrd p{font-size:11px;color:var(--muted);line-height:1.45}
+
+/* ============================================================
+   SLIDE 4 — WHY CONSUMERS
+   ============================================================ */
+#s4{background:var(--cream);display:flex;flex-direction:column;padding:88px 80px 64px;justify-content:center}
+#s4 .eyebrow{color:var(--teal)}
+#s4 .h2{color:var(--navy);margin-bottom:32px}
+.cons-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.cc{border-radius:18px;padding:32px 26px;display:flex;flex-direction:column}
+.cc.rew{background:var(--navy)}
+.cc.fun{background:var(--teal)}
+.cc.mng{background:var(--coral)}
+.cc-emo{font-size:36px;margin-bottom:18px}
+.cc-lbl{font-size:9px;letter-spacing:.18em;text-transform:uppercase;opacity:.55;margin-bottom:6px;font-weight:600;color:#fff}
+.cc-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#fff;margin-bottom:14px;line-height:1.1}
+.cc-body{font-size:12.5px;line-height:1.68;color:rgba(255,255,255,.8);flex:1}
+.cc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:18px}
+.cc-tag{font-size:10px;border:1px solid rgba(255,255,255,.28);border-radius:20px;padding:4px 10px;color:rgba(255,255,255,.75)}
+
+/* ============================================================
+   SLIDE 5 — CAMPAIGN
+   ============================================================ */
+#s5{background:#F2EFE3;display:flex;flex-direction:row;padding:0}
+.camp-left{width:48%;padding:80px 64px;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:2}
+.camp-left .eyebrow{color:var(--coral)}
+.camp-left .h2{color:var(--navy);margin-bottom:16px}
+.camp-left .body{margin-bottom:26px;max-width:400px;color:#4A5A6A}
+.camp-stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+.cst{background:rgba(13,28,46,.06);border:1px solid rgba(13,28,46,.10);border-radius:12px;padding:18px}
+.cst .n{font-family:'Playfair Display',serif;font-size:28px;color:var(--coral);line-height:1;margin-bottom:5px}
+.cst .l{font-size:10.5px;color:#5A6A7A;line-height:1.4}
+.ds-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(201,79,50,.08);border:1px solid rgba(201,79,50,.25);border-radius:8px;padding:10px 15px;font-size:11.5px;color:var(--coral);font-weight:500}
+.camp-right{flex:1;position:relative;overflow:hidden}
+.camp-right iframe{position:absolute;inset:0;width:100%;height:100%;border:none;opacity:.9}
+.camp-right::before{content:'';position:absolute;left:0;top:0;bottom:0;width:80px;background:linear-gradient(90deg,#F2EFE3,transparent);z-index:2;pointer-events:none}
+
+/* ============================================================
+   SLIDE 6 — MERCHANTS
+   ============================================================ */
+#s6{background:var(--cream);display:flex;flex-direction:column;padding:88px 80px 64px;justify-content:center}
+#s6 .eyebrow{color:var(--coral)}
+#s6 .h2{color:var(--navy);margin-bottom:28px}
+.merch-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:44px}
+.merch-left{display:flex;flex-direction:column;gap:0}
+.zf-box{background:var(--navy);border-radius:14px;padding:22px;margin-bottom:18px}
+.zf-lbl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;font-weight:600}
+.zf-row{display:flex;gap:10px}
+.zf-it{flex:1;text-align:center}
+.zf-it .zi{font-size:18px;margin-bottom:5px}
+.zf-it .zt{font-size:10.5px;color:rgba(247,239,224,.65);line-height:1.3}
+.step{display:flex;gap:14px;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.06)}
+.step:last-child{border-bottom:none}
+.snum{width:28px;height:28px;border-radius:50%;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px}
+.step h5{font-size:14px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.step p{font-size:12px;color:#5A6A7A;line-height:1.55}
+.merch-right{display:flex;flex-direction:column;gap:12px}
+.bfts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bft{background:#fff;border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:15px}
+.bft .bi{font-size:18px;margin-bottom:7px}
+.bft h5{font-size:13px;font-weight:600;color:var(--navy);margin-bottom:3px}
+.bft p{font-size:11px;color:#6A7A8A;line-height:1.45}
+.unlock{background:linear-gradient(135deg,var(--coral),var(--gold));border-radius:12px;padding:15px 18px;display:flex;align-items:flex-start;gap:14px}
+.unlock .ui{font-size:22px;flex-shrink:0;margin-top:2px}
+.unlock p{font-size:12.5px;color:#fff;line-height:1.55}
+.unlock strong{font-weight:600}
+
+/* ============================================================
+   SLIDE 7 — PARTNERSHIP
+   ============================================================ */
+#s7{background:var(--navy);display:flex;flex-direction:column;padding:88px 80px 64px;justify-content:flex-start}
+#s7 .eyebrow{color:var(--gold)}
+#s7 .h2{color:var(--cream);margin-bottom:16px}
+.ptabs{display:flex;gap:3px;margin:20px 0 24px;background:rgba(255,255,255,.06);border-radius:9px;padding:3px;width:fit-content}
+.ptab{padding:8px 20px;border-radius:7px;font-size:11.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .25s;letter-spacing:.03em}
+.ptab.on{background:var(--coral);color:#fff}
+.pc{display:none;animation:fi .3s ease}
+.pc.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.pl{display:grid;grid-template-columns:1.15fr 1fr;gap:28px}
+.pi-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:26px}
+.pi-eye{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:7px;font-weight:600}
+.pi-box h3{font-family:'Playfair Display',serif;font-size:20px;color:var(--cream);margin-bottom:12px;line-height:1.2}
+.pi-box .intro{font-size:12.5px;color:var(--muted);line-height:1.65;margin-bottom:18px}
+.bl{display:flex;flex-direction:column;gap:9px}
+.bli{display:flex;gap:11px;align-items:flex-start;padding:11px 14px;background:rgba(255,255,255,.04);border-radius:9px;border-left:2.5px solid var(--coral)}
+.bli-ic{font-size:14px;flex-shrink:0;margin-top:2px}
+.bli h6{font-size:12.5px;font-weight:600;color:var(--cream);margin-bottom:2px}
+.bli p{font-size:11px;color:var(--muted);line-height:1.45}
+.ask-box{background:rgba(201,79,50,.12);border:1px solid rgba(201,79,50,.28);border-radius:12px;padding:20px}
+.ask-box h5{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--coral);margin-bottom:12px;font-weight:600}
+.ai{font-size:11.5px;color:rgba(247,239,224,.78);padding:4px 0;display:flex;align-items:center;gap:8px}
+.ai::before{content:'→';color:var(--coral);font-size:11px}
+.note-box{border-radius:12px;padding:20px;margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.6}
+.note-box .nb-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;font-weight:600}
+.ai.xl{align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(201,79,50,.15)}
+.ai.xl:last-child{border-bottom:none}
+.ai.xl::before{content:none}
+.ai.xl strong{display:block;font-weight:600;color:var(--cream);margin-bottom:3px;font-size:12px}
+.ai.xl span{display:block;font-size:10.5px;color:var(--muted);line-height:1.45}
+.ai-ic{font-size:15px;flex-shrink:0;margin-top:2px}
+.note-box strong{color:var(--cream)}
+
+/* ============================================================
+   SLIDE 8 — DATA PRIVACY
+   ============================================================ */
+#s8{background:var(--navy2);display:flex;flex-direction:column;padding:88px 80px 64px;justify-content:center}
+#s8 .eyebrow{color:var(--gold)}
+#s8 .h2{color:var(--cream);margin-bottom:32px}
+.priv-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:22px}
+.pcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:26px}
+.pcard .pi{font-size:28px;margin-bottom:14px}
+.pcard h4{font-size:14px;font-weight:600;color:var(--cream);margin-bottom:9px}
+.pcard p{font-size:12px;color:var(--muted);line-height:1.65}
+.priv-btm{display:flex;justify-content:center;margin-bottom:36px}
+.contact-box{width:220px;background:var(--coral);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;justify-content:center;text-align:center;gap:4px}
+.contact-box .ct{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);font-weight:600}
+.contact-box strong{font-size:14px;color:#fff;font-weight:600}
+.contact-box small{font-size:10px;color:rgba(255,255,255,.65)}
+
+/* ============================================================
+   MOBILE RESPONSIVE  ≤ 767px
+   ============================================================ */
+@media(max-width:767px){
+  /* Keep full-screen slide deck; make each slide's content scrollable inside viewport */
+  .slide{overflow-y:auto;overflow-x:hidden}
+
+  /* chrome */
+  .chrome-logo{top:16px;left:16px}
+  .chrome-counter{top:20px;right:16px}
+  .chrome-nav{bottom:18px;gap:12px}
+
+  /* s1 cover */
+  #s1{padding:80px 24px 110px;justify-content:flex-start;align-items:flex-start}
+  .cover-dots{width:100%;opacity:.4}
+  .cover-inner{max-width:100%}
+  .cover-inner .h1{font-size:clamp(42px,11vw,58px)}
+  .cover-sub{font-size:13px}
+  .cover-badges{gap:8px;flex-direction:column;align-items:flex-start}
+  .cbadge{font-size:10px;padding:7px 11px}
+
+  /* s2 */
+  #s2{flex-direction:column}
+  .s2-left{padding:60px 24px 28px}
+  .s2-right{width:100%;padding:32px 24px 100px}
+  .qm{font-size:48px}
+  .quote-text{font-size:16px}
+
+  /* s3 */
+  #s3{padding:88px 24px 100px;justify-content:flex-start}
+  .intel-grid{grid-template-columns:1fr}
+  .compare-box{grid-template-columns:1fr 1fr}
+  .output-cards{grid-template-columns:1fr 1fr}
+
+  /* s4 */
+  #s4{padding:88px 24px 100px;justify-content:flex-start}
+  .cons-grid{grid-template-columns:1fr;gap:14px}
+  .cc{padding:24px 20px}
+
+  /* s5 */
+  #s5{flex-direction:column}
+  .camp-left{width:100%;padding:72px 24px 24px}
+  .camp-right{flex:none;height:280px;width:100%}
+  .camp-right::before{width:0}
+  .camp-stats{grid-template-columns:1fr 1fr}
+
+  /* s6 */
+  #s6{padding:88px 24px 100px;justify-content:flex-start}
+  .merch-grid{grid-template-columns:1fr;gap:24px}
+  .bfts{grid-template-columns:1fr 1fr}
+
+  /* s7 */
+  #s7{padding:88px 24px 100px}
+  .ptabs{flex-wrap:wrap}
+  .pl{grid-template-columns:1fr}
+
+  /* s8 */
+  #s8{padding:88px 24px 100px;justify-content:flex-start}
+  .priv-grid{grid-template-columns:1fr}
+  .contact-box{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- CHROME -->
+<div class="chrome-logo">
+  <div class="logo-mark"><img src="logo/favicon.png" alt="Rally AI"></div>
+  <span class="logo-text">Rally AI</span>
+</div>
+<div class="chrome-counter" id="ctr">1 / 8</div>
+<nav class="chrome-nav">
+  <button class="nbtn" onclick="nav(-1)" aria-label="Previous slide">&#8592;</button>
+  <div class="dots" id="dots"></div>
+  <button class="nbtn" onclick="nav(1)" aria-label="Next slide">&#8594;</button>
+</nav>
+
+<div class="deck">
+
+<!-- =========================================================
+     SLIDE 1: COVER  (all partners)
+     ========================================================= -->
+<div class="slide active" id="s1" data-partners="all" data-theme="dark">
+  <div id="coverMap"></div>
+  <div class="cover-inner">
+    <p class="partner-label" id="partnerLabel"></p>
+    <div class="cover-tag">&#9670; Katong–Joo Chiat &nbsp;·&nbsp; District Campaign &nbsp;&#9670;</div>
+    <h1 class="h1">Mapping Singapore's<br><em>F&B Intelligence</em></h1>
+    <p class="cover-sub">Rally AI turns every diner into an intelligence contributor — building Singapore's first hyperlocal F&B benchmark, district by district.</p>
+    <div class="cover-badges">
+      <div class="cbadge"><span class="cbadge-ic">&#128506;</span> 800+ F&B Outlets Mapped</div>
+      <div class="cbadge"><img src="https://designsingapore.org/wp-content/uploads/2024/12/design-singapore-logo.png" alt="Design Singapore" style="height:16px;width:auto;object-fit:contain;filter:brightness(0) invert(1)"> Good Design Research Award by Design Singapore</div>
+      <div class="cbadge"><span class="cbadge-ic">&#128197;</span> 14-Day Campaign · May–Jun 2026</div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 2: WHAT IS RALLY  (all partners)
+     ========================================================= -->
+<div class="slide" id="s2" data-partners="all" data-theme="light">
+  <div class="s2-left">
+    <div class="eyebrow">Who We Are</div>
+    <h2 class="h2">A Singapore AI startup<br>built for F&B intelligence</h2>
+    <p>Rally AI is a <strong>Customer Intelligence Platform</strong> — giving Singapore's F&B merchants real-time, outlet-level insights that were previously only available to large chains.</p>
+    <p>Real diners. Gamified quests. Actionable data — for merchants, district associations, and the wider F&B ecosystem.</p>
+    <div class="stat-section-title">High Resolution Intelligence</div>
+    <div class="stat-row">
+      <div class="scard"><div class="use-case">Audit</div><div class="n insight-n">"Tables dirtiest at 2–5pm,<br>not lunch peak"</div><div class="l">Afternoon lull is when hawker stalls lose the most cleanliness marks — the blind spot no one sees</div></div>
+      <div class="scard"><div class="use-case">Gap</div><div class="n insight-n">"Feeling ignored, not price,<br>drives people away"</div><div class="l">The #1 reason KJC casual diners don't return — even when they liked the food</div></div>
+      <div class="scard"><div class="use-case">Benchmark</div><div class="n insight-n">"Peranakan cafes: 3rd for food,<br>5th for value"</div><div class="l">Your rank vs outlets of the same type in KJC — not a generic district average</div></div>
+      <div class="scard"><div class="use-case">Acquisition</div><div class="n insight-n">"Friend referrals return 3× more<br>than Instagram visitors"</div><div class="l">Word-of-mouth brings your best dinner regulars — your most under-invested channel</div></div>
+    </div>
+  </div>
+  <div class="s2-right">
+    <div class="qm">"</div>
+    <p class="quote-text">Co-creating remarkable experiences with meaningful insights</p>
+    <div class="quote-src">Rally AI · Mission</div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 3: INTELLIGENCE  (all partners)
+     ========================================================= -->
+<div class="slide" id="s3" data-partners="all" data-theme="dark">
+  <div class="eyebrow">What Makes Us Different</div>
+  <h2 class="h2">Beyond transaction data</h2>
+  <div class="intel-grid">
+    <div class="sources-box">
+      <h4>What we collect</h4>
+      <div class="src-grid">
+        <div class="src-item">
+          <div class="src-ic">&#129534;</div>
+          <div>
+            <h5>Receipt Data</h5>
+            <p>Verified visit + spend via photo upload — no manual input needed</p>
+          </div>
+        </div>
+        <div class="src-item">
+          <div class="src-ic">&#128172;</div>
+          <div>
+            <h5>Quest Responses</h5>
+            <p>AI-validated answers to targeted F&B experience questions — not generic star ratings</p>
+          </div>
+        </div>
+        <div class="src-item">
+          <div class="src-ic">&#128205;</div>
+          <div>
+            <h5>Location &amp; Context</h5>
+            <p>Time of day, occasion, visit frequency — the why behind the visit</p>
+          </div>
+        </div>
+        <div class="src-item">
+          <div class="src-ic">&#128300;</div>
+          <div>
+            <h5>Research Data</h5>
+            <p>Per-merchant and sector data we gather to enrich our context for deeper analysis and insights</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="intel-right">
+      <div class="compare-box">
+        <div class="cmp">
+          <h5>Traditional CRM / POS</h5>
+          <div class="cmp-item">Transaction history</div>
+          <div class="cmp-item">Loyalty points balance</div>
+          <div class="cmp-item">Sales by menu item</div>
+          <div class="cmp-item">Repeat visit count</div>
+        </div>
+        <div class="cmp hi">
+          <h5>Rally AI Intelligence</h5>
+          <div class="cmp-item">Why customers didn't return</div>
+          <div class="cmp-item">Experience quality by time slot</div>
+          <div class="cmp-item">Segment satisfaction gaps</div>
+          <div class="cmp-item">Real-time service audit flags</div>
+        </div>
+      </div>
+      <h4 class="output-label">Use Cases</h4>
+      <div class="output-cards">
+        <div class="ocrd">
+          <div class="oi">&#128269;</div><h5>Ops &amp; Audit</h5><p>Daily offline experience monitoring</p>
+          <svg viewBox="0 0 160 56" width="100%" style="margin-top:10px;display:block">
+            <line x1="8" y1="8" x2="155" y2="8" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <line x1="8" y1="26" x2="155" y2="26" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <line x1="8" y1="44" x2="155" y2="44" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+            <!-- line drawn first (behind dots) -->
+            <polyline points="8,38 28,30 48,24 68,26 88,20 108,43 128,38 148,35"
+              fill="none" stroke="rgba(201,79,50,.5)" stroke-width="1.5" stroke-linejoin="round"
+              style="stroke-dasharray:200;stroke-dashoffset:200" data-anim="cLine .7s ease .1s forwards"/>
+            <line x1="108" y1="8" x2="108" y2="43" stroke="rgba(201,79,50,.2)" stroke-width="1" stroke-dasharray="2,2"
+              style="opacity:0" data-anim="cFade .3s ease .9s forwards"/>
+            <!-- hourly dots (opaque, on top of line) -->
+            <circle cx="8" cy="38" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .1s forwards"/>
+            <circle cx="28" cy="30" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .22s forwards"/>
+            <circle cx="48" cy="24" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .34s forwards"/>
+            <circle cx="68" cy="26" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .46s forwards"/>
+            <circle cx="88" cy="20" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .58s forwards"/>
+            <circle cx="108" cy="43" r="4.5" fill="#C94F32"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .3s ease .75s forwards"/>
+            <circle cx="128" cy="38" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .88s forwards"/>
+            <circle cx="148" cy="35" r="3" fill="var(--navy2)" stroke="rgba(201,79,50,.55)" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease 1s forwards"/>
+            <text x="4" y="11" font-size="7" fill="rgba(247,239,224,.3)" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .4s ease 0s forwards">Satisfied</text>
+            <text x="4" y="52" font-size="7" fill="rgba(247,239,224,.3)" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .4s ease 0s forwards">Dissatisfied</text>
+            <text x="108" y="36" font-size="7" fill="rgba(201,79,50,.9)" font-family="sans-serif" text-anchor="middle"
+              style="opacity:0" data-anim="cFade .4s ease 1s forwards">dip</text>
+          </svg>
+        </div>
+        <div class="ocrd">
+          <div class="oi">&#9889;</div><h5>Real-Time Gap Analysis</h5><p>Know what's broken today — not months later</p>
+          <svg viewBox="0 0 160 54" width="100%" style="margin-top:10px;display:block">
+            <!-- lines drawn first (behind nodes) -->
+            <line x1="16" y1="16" x2="46" y2="16" stroke="rgba(255,255,255,.2)" stroke-width="1"
+              style="stroke-dasharray:30;stroke-dashoffset:30" data-anim="cLine .2s ease .05s forwards"/>
+            <line x1="46" y1="16" x2="76" y2="16" stroke="rgba(255,255,255,.2)" stroke-width="1"
+              style="stroke-dasharray:30;stroke-dashoffset:30" data-anim="cLine .2s ease .25s forwards"/>
+            <line x1="76" y1="16" x2="107" y2="16" stroke="rgba(201,79,50,.45)" stroke-width="1"
+              style="stroke-dasharray:31;stroke-dashoffset:31" data-anim="cLine .2s ease .45s forwards"/>
+            <line x1="107" y1="16" x2="144" y2="16" stroke="rgba(255,255,255,.2)" stroke-width="1"
+              style="stroke-dasharray:37;stroke-dashoffset:37" data-anim="cLine .2s ease .75s forwards"/>
+            <!-- nodes (opaque fill, on top of lines) -->
+            <circle cx="16" cy="16" r="5" fill="var(--navy2)" stroke="rgba(255,255,255,.25)" stroke-width="1"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .0s forwards"/>
+            <circle cx="46" cy="16" r="5" fill="var(--navy2)" stroke="rgba(255,255,255,.25)" stroke-width="1"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .2s forwards"/>
+            <circle cx="76" cy="16" r="5" fill="var(--navy2)" stroke="rgba(255,255,255,.25)" stroke-width="1"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .4s forwards"/>
+            <circle cx="107" cy="16" r="9" fill="var(--navy2)" stroke="#C94F32" stroke-width="1.5"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .25s ease .65s forwards"/>
+            <text x="107" y="20" font-size="10" fill="#C94F32" text-anchor="middle" font-family="sans-serif" font-weight="700"
+              style="opacity:0" data-anim="cFade .2s ease .85s forwards">!</text>
+            <circle cx="144" cy="16" r="5" fill="var(--navy2)" stroke="rgba(255,255,255,.25)" stroke-width="1"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .2s ease .9s forwards"/>
+            <text x="16" y="36" font-size="7" fill="rgba(247,239,224,.3)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .05s forwards">Order</text>
+            <text x="46" y="36" font-size="7" fill="rgba(247,239,224,.3)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .25s forwards">Wait</text>
+            <text x="76" y="36" font-size="7" fill="rgba(247,239,224,.3)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .45s forwards">Serve</text>
+            <text x="107" y="36" font-size="7" fill="rgba(201,79,50,.9)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .7s forwards">Bill</text>
+            <text x="144" y="36" font-size="7" fill="rgba(247,239,224,.3)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .95s forwards">Exit</text>
+            <text x="107" y="50" font-size="7" fill="rgba(201,79,50,.7)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease 1.1s forwards">high friction</text>
+          </svg>
+        </div>
+        <div class="ocrd">
+          <div class="oi">&#128202;</div><h5>District Benchmarks</h5><p>How your outlet stacks up across KJC</p>
+          <svg viewBox="0 0 160 66" width="100%" style="margin-top:10px;display:block">
+            <line x1="8" y1="54" x2="152" y2="54" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <path d="M8,54 C22,54 30,50 42,40 C54,28 60,10 80,8 C100,10 106,28 118,40 C130,50 138,54 152,54 Z"
+              fill="rgba(255,255,255,.06)" style="opacity:0" data-anim="cFade .5s ease .1s forwards"/>
+            <path d="M8,54 C22,54 30,50 42,40 C54,28 60,10 80,8 C100,10 106,28 118,40 C130,50 138,54 152,54"
+              fill="none" stroke="rgba(255,255,255,.18)" stroke-width="1"
+              style="stroke-dasharray:300;stroke-dashoffset:300" data-anim="cLine .8s ease .1s forwards"/>
+            <path d="M114,32 C120,38 128,48 136,54 L152,54 C138,54 130,50 118,40 Z"
+              fill="rgba(201,79,50,.15)" style="opacity:0" data-anim="cFade .4s ease .8s forwards"/>
+            <line x1="114" y1="10" x2="114" y2="54" stroke="rgba(201,79,50,.7)" stroke-width="1.5" stroke-dasharray="3,2"
+              style="opacity:0" data-anim="cFade .4s ease .9s forwards"/>
+            <circle cx="114" cy="32" r="3.5" fill="#C94F32"
+              style="opacity:0;transform-box:fill-box;transform-origin:center" data-anim="cPop .3s ease 1.1s forwards"/>
+            <text x="80" y="63" font-size="7" fill="rgba(247,239,224,.3)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .3s forwards">Avg Sales →</text>
+            <text x="114" y="19" font-size="8" fill="#C94F32" text-anchor="middle" font-family="sans-serif" font-weight="700"
+              style="opacity:0" data-anim="cFade .4s ease 1.2s forwards">Top 22%</text>
+            <text x="114" y="64" font-size="7" fill="rgba(201,79,50,.8)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease 1.3s forwards">You</text>
+          </svg>
+        </div>
+        <div class="ocrd">
+          <div class="oi">&#128336;</div><h5>Time &amp; Segment Intel</h5><p>Lunch crowd vs dinner crowd — same outlet, different story</p>
+          <svg viewBox="0 0 160 66" width="100%" style="margin-top:10px;display:block">
+            <line x1="18" y1="52" x2="152" y2="52" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <line x1="18" y1="12" x2="18" y2="52" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+            <rect x="28" y="34" width="13" height="18" fill="rgba(255,255,255,.15)" rx="2"
+              style="transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0)" data-anim="cGrow .4s ease .2s forwards"/>
+            <rect x="43" y="24" width="13" height="28" fill="rgba(201,79,50,.7)" rx="2"
+              style="transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0)" data-anim="cGrow .4s ease .35s forwards"/>
+            <rect x="86" y="22" width="13" height="30" fill="rgba(255,255,255,.15)" rx="2"
+              style="transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0)" data-anim="cGrow .4s ease .5s forwards"/>
+            <rect x="101" y="36" width="13" height="16" fill="rgba(201,79,50,.7)" rx="2"
+              style="transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(0)" data-anim="cGrow .4s ease .65s forwards"/>
+            <text x="47" y="63" font-size="7.5" fill="rgba(247,239,224,.4)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .8s forwards">Lunch</text>
+            <text x="101" y="63" font-size="7.5" fill="rgba(247,239,224,.4)" text-anchor="middle" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease .8s forwards">Dinner</text>
+            <rect x="22" y="5" width="7" height="5" fill="rgba(201,79,50,.7)" rx="1"
+              style="opacity:0" data-anim="cFade .3s ease 0s forwards"/>
+            <text x="32" y="10" font-size="7" fill="rgba(247,239,224,.45)" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease 0s forwards">You</text>
+            <rect x="58" y="5" width="7" height="5" fill="rgba(255,255,255,.15)" rx="1"
+              style="opacity:0" data-anim="cFade .3s ease 0s forwards"/>
+            <text x="68" y="10" font-size="7" fill="rgba(247,239,224,.45)" font-family="sans-serif"
+              style="opacity:0" data-anim="cFade .3s ease 0s forwards">Similar F&amp;B</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 4: WHY CONSUMERS  (all partners)
+     ========================================================= -->
+<div class="slide" id="s4" data-partners="all" data-theme="light">
+  <div class="eyebrow">Consumer Value</div>
+  <h2 class="h2">Why diners will participate</h2>
+  <div class="cons-grid">
+    <div class="cc rew">
+      <div class="cc-emo">&#128176;</div>
+      <div class="cc-title">Earn real cash</div>
+      <p class="cc-body">Every receipt uploaded and question answered earns real PayNow cashback — plus a chance to win attractive prizes. No points, no expiry.</p>
+      <div class="cc-tags">
+        <span class="cc-tag">PayNow Cashback</span>
+        <span class="cc-tag">Earn up to $5/day</span>
+        <span class="cc-tag">Win Apple iPhone</span>
+      </div>
+    </div>
+    <div class="cc fun">
+      <div class="cc-emo">&#128506;</div>
+      <div class="cc-title">Discover &amp; explore</div>
+      <p class="cc-body">Follow themed trails through KJC — slurp Katong Laksa, hunt down Peranakan Nonya gems, grab a Banh Mi on Joo Chiat Road. Get rewarded for every stop.</p>
+      <div class="cc-tags">
+        <span class="cc-tag">Katong Laksa</span>
+        <span class="cc-tag">Peranakan Nonya</span>
+        <span class="cc-tag">Vietnamese Banh Mi</span>
+      </div>
+    </div>
+    <div class="cc mng">
+      <div class="cc-emo">&#127807;</div>
+      <div class="cc-title">Shape the scene</div>
+      <p class="cc-body">Your voice helps local merchants survive and thrive. In a market where 82% of F&B businesses have never turned a profit, every response is a vote for a better KJC.</p>
+      <div class="cc-tags">
+        <span class="cc-tag">Support Local</span>
+        <span class="cc-tag">Preserve Heritage</span>
+        <span class="cc-tag">Build KJC's Future</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 5: KJC CAMPAIGN  (all partners)
+     ========================================================= -->
+<div class="slide" id="s5" data-partners="all" data-theme="light">
+  <div class="camp-left">
+    <div class="eyebrow">The Campaign</div>
+    <h2 class="h2">Katong–Joo Chiat<br>Intelligence Campaign</h2>
+    <p class="body">800+ F&B outlets mapped. 14 days. Real diners exploring the district — generating Singapore's first hyperlocal F&B intelligence benchmark.</p>
+    <div class="camp-stats">
+      <div class="cst"><div class="n">800+</div><div class="l">F&B outlets mapped in KJC</div></div>
+      <div class="cst"><div class="n">14</div><div class="l">Day campaign window</div></div>
+      <div class="cst"><div class="n">1,000</div><div class="l">Diners targeted across the district</div></div>
+      <div class="cst"><div class="n">#1</div><div class="l">First hyperlocal F&B benchmark in Singapore</div></div>
+    </div>
+    <div class="ds-badge"><img src="https://designsingapore.org/wp-content/uploads/2024/12/design-singapore-logo.png" alt="Design Singapore" style="height:32px;width:auto;object-fit:contain;filter:brightness(0) saturate(100%) invert(28%) sepia(50%) saturate(700%) hue-rotate(340deg) brightness(85%)"> Good Design Research Award by Design Singapore</div>
+  </div>
+  <div class="camp-right">
+    <img src="assets/image-riding.jpg" alt="Cycling through Katong–Joo Chiat" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85">
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 6: MERCHANTS  (kjcba, alibabar — not anywheel)
+     ========================================================= -->
+<div class="slide" id="s6" data-partners="kjcba,alibabar" data-theme="light">
+  <div class="eyebrow">For Merchants</div>
+  <h2 class="h2">Zero friction, zero cost</h2>
+  <div class="merch-grid">
+    <div class="merch-left">
+      <div class="zf-box">
+        <div class="zf-row">
+          <div class="zf-it"><div class="zi">&#128683;</div><div class="zt">No POS integration</div></div>
+          <div class="zf-it"><div class="zi">&#128196;</div><div class="zt">No data setup</div></div>
+          <div class="zf-it"><div class="zi">&#9889;</div><div class="zt">1 QR code, done</div></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="snum">1</div>
+        <div><h5>Receive campaign materials</h5><p>QR standees, window stickers, digital assets — ready from day one.</p></div>
+      </div>
+      <div class="step">
+        <div class="snum">2</div>
+        <div><h5>Rally your customers</h5><p>Encourage diners to scan and complete quests.</p></div>
+      </div>
+      <div class="step">
+        <div class="snum">3</div>
+        <div><h5>Receive your intelligence report</h5><p>Every participating outlet gets a free business intelligence summary at campaign close.</p></div>
+      </div>
+    </div>
+    <div class="merch-right">
+      <div class="zf-lbl" style="margin-bottom:10px;color:var(--coral)">Real benefits</div>
+      <div class="bfts">
+        <div class="bft"><div class="bi">&#128200;</div><h5>Drive foot traffic</h5><p>Featured on Rally's campaign map, app, and social throughout the 14 days</p></div>
+        <div class="bft"><div class="bi">&#129504;</div><h5>Free intelligence</h5><p>Outlet-level customer feedback report delivered at no cost after the campaign</p></div>
+        <div class="bft"><div class="bi">&#127381;</div><h5>Exclusive perks</h5><p>Complimentary sessions with our ecosystem partners — digital marketing, brand consulting, advertising</p></div>
+        <div class="bft"><div class="bi">&#128227;</div><h5>Marketing exposure</h5><p>Exclusive rates for digital marketing via Rally's campaign partner network</p></div>
+      </div>
+      <div class="unlock">
+        <div class="ui">&#128275;</div>
+        <p><strong>Unlock deeper insights:</strong> Collect 100+ responses to get full segmentation data — who your customers are, when they visit, and what keeps them coming back.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 7: PARTNERSHIP  (all partners — tab auto-selected)
+     ========================================================= -->
+<div class="slide" id="s7" data-partners="all" data-theme="dark">
+  <div class="eyebrow">Partnership Opportunity</div>
+  <h2 class="h2">Let's Rally</h2>
+  <div class="ptabs" id="ptabs">
+    <div class="ptab on" onclick="pt('kjcba',this)">KJCBA</div>
+    <div class="ptab" onclick="pt('ali',this)">Alibabar</div>
+    <div class="ptab" onclick="pt('any',this)">Anywheel</div>
+  </div>
+
+  <!-- KJCBA -->
+  <div class="pc on" id="pc-kjcba">
+    <div class="pl">
+      <div class="pi-box">
+        <div class="pi-eye">District Association</div>
+        <h3>Katong–Joo Chiat Business Association</h3>
+        <p class="intro">KJCBA is the natural lead partner for Singapore's first hyperlocal F&B intelligence campaign — putting the KJC precinct on the data map.</p>
+        <div class="bl">
+          <div class="bli"><span class="bli-ic">&#128202;</span><div><h6>District intelligence report</h6><p>KJC F&B benchmark — sentiment trends, peak hours, customer segments, service quality by sub-precinct</p></div></div>
+          <div class="bli"><span class="bli-ic">&#127991;</span><div><h6>Co-branding across all campaign materials</h6><p>KJCBA logo on QR standees, app, website, press, and social for the full campaign window</p></div></div>
+          <div class="bli"><span class="bli-ic">&#127758;</span><div><h6>Network ecosystem integration</h6><p>Rally connects to KJCBA's partner network — consultants, agencies, and design partners provide perks to participating merchants</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="ask-box">
+          <h5>What we ask from KJCBA</h5>
+          <div class="ai">Rally merchant participation within the precinct</div>
+          <div class="ai">Share campaign with KJCBA members and network</div>
+          <div class="ai">Co-promote to the KJC community and visitors</div>
+          <div class="ai">Connect Rally to key district stakeholders</div>
+        </div>
+        <div class="note-box" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)">
+          <div class="nb-lbl" style="color:var(--gold)">The bigger picture</div>
+          KJC becomes the first Singapore precinct with a published F&B customer experience benchmark — <strong>a landmark for the district and a scalable model for every precinct nationwide.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALIBABAR -->
+  <div class="pc" id="pc-ali">
+    <div class="pl">
+      <div class="pi-box">
+        <div class="pi-eye">Anchor Merchant Partner</div>
+        <h3>Alibabar Hawker Bar, East Coast</h3>
+        <p class="intro">As a beloved KJC institution, Alibabar is the perfect Quest Hub — where diners begin their trail, earn bonus rewards, and discover the wider district.</p>
+        <div class="bl">
+          <div class="bli"><span class="bli-ic">&#11088;</span><div><h6>Quest Hub status</h6><p>Prominently featured on the trail map with bonus rewards — diners actively seek you out</p></div></div>
+          <div class="bli"><span class="bli-ic">&#128227;</span><div><h6>Campaign co-promotion</h6><p>Featured in Rally's social, press, and campaign materials for the full 14-day window</p></div></div>
+          <div class="bli"><span class="bli-ic">&#127873;</span><div><h6>Partner perks</h6><p>Free branding consultation + exclusive digital marketing rates from Rally's ecosystem partners</p></div></div>
+          <div class="bli"><span class="bli-ic">&#128202;</span><div><h6>Rally Intelligence</h6><p>Deeper insights: segmentation, experience gaps, and precinct-level competitor benchmarks</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="ask-box">
+          <h5>What we ask from Alibabar</h5>
+          <div class="ai xl"><span class="ai-ic">&#129309;</span><div><strong>Participate as an active campaign merchant</strong><span>Be present and engaged with diners during the campaign</span></div></div>
+          <div class="ai xl"><span class="ai-ic">&#128203;</span><div><strong>Display campaign QR codes and materials</strong><span>Place QR standees and printed collateral at your venue for diners to discover and scan</span></div></div>
+          <div class="ai xl"><span class="ai-ic">&#128242;</span><div><strong>Share campaign on Alibabar's social channels</strong><span>Post about the campaign during the window to reach your existing audience and drive foot traffic</span></div></div>
+          <div class="ai xl"><span class="ai-ic">&#127881;</span><div><strong>Run your own activation moment (optional)</strong><span>An in-venue special or event during the campaign to draw diners in — timed to your preference</span></div></div>
+          <div class="ai xl"><span class="ai-ic">&#127873;</span><div><strong>Offer lucky draw prizes (optional)</strong><span>Contribute prizes for the campaign-wide lucky draw, giving diners an extra reason to visit Alibabar</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANYWHEEL -->
+  <div class="pc" id="pc-any">
+    <div class="pl">
+      <div class="pi-box">
+        <div class="pi-eye">Strategic Platform Partner</div>
+        <h3>Anywheel — Singapore's Cycling Network</h3>
+        <p class="intro">Rally AI and Anywheel share a vision: a more connected Singapore. Together we run district-by-district campaigns that grow both platforms.</p>
+        <div class="bl">
+          <div class="bli"><span class="bli-ic">&#128690;</span><div><h6>District-by-district rollout</h6><p>KJC is campaign #1. Each quarter, a new district — Tiong Bahru, Chinatown, Geylang — driving Anywheel rides and Rally quests simultaneously</p></div></div>
+          <div class="bli"><span class="bli-ic">&#128247;</span><div><h6>Rally on Anywheel bikes + app</h6><p>Campaign QR on bike frames and docks; F&B trails discoverable in the Anywheel app near parking spots</p></div></div>
+          <div class="bli"><span class="bli-ic">&#128104;&#8205;&#128105;&#8205;&#128103;</span><div><h6>F&B trail co-campaigns</h6><p>Ride the district, stop at Quest Hubs, earn rewards — a complete weekend experience for families and friends</p></div></div>
+          <div class="bli"><span class="bli-ic">&#128188;</span><div><h6>Grow merchant advertising</h6><p>Rally connects more F&B merchants to Anywheel as advertisers — growing B2B revenue for both platforms</p></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="ask-box">
+          <h5>What we ask from Anywheel</h5>
+          <div class="ai">Promote Rally KJC campaign in Anywheel app</div>
+          <div class="ai">Feature campaign QR on bike frames or docks</div>
+          <div class="ai">Co-create 1–2 social media campaign posts</div>
+          <div class="ai">Commit to district-by-district rollout plan</div>
+        </div>
+        <div class="note-box" style="background:rgba(30,114,96,.12);border:1px solid rgba(30,114,96,.3)">
+          <div class="nb-lbl" style="color:#5BBFB0">The Singapore rollout vision</div>
+          Every quarter, a new district gets mapped. Every campaign drives Anywheel rides. <strong>Singapore, district by district.</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SLIDE 8: DATA PRIVACY  (all partners)
+     ========================================================= -->
+<div class="slide" id="s8" data-partners="all" data-theme="dark">
+  <div class="eyebrow">Data Governance</div>
+  <h2 class="h2">Data sponsored, owned and governed by Rally AI.</h2>
+  <div class="priv-grid">
+    <div class="pcard">
+      <div class="pi">&#128373;</div>
+      <h4>Consumer Privacy</h4>
+      <p>Fully anonymised like mystery shoppers. Merchants receive only segment profiles — never personal data or contact details. Diners consent explicitly.</p>
+    </div>
+    <div class="pcard">
+      <div class="pi">&#127978;</div>
+      <h4>Data Ownership</h4>
+      <p>Merchants provide zero data. All intelligence is sponsored, owned and governed by Rally AI — merchants access curated reports, never raw data.</p>
+    </div>
+    <div class="pcard">
+      <div class="pi">&#129302;</div>
+      <h4>AI Safety</h4>
+      <p>Human oversight prevents algorithmic bias, with transparent insight explanations and regularly audited training data.</p>
+    </div>
+    <div class="pcard">
+      <div class="pi">&#128300;</div>
+      <h4>Methodology</h4>
+      <p>Our data methodology is reviewed and supported under the Good Design Research Grant — institutional validation of our approach and mission.</p>
+    </div>
+  </div>
+  <div class="priv-btm">
+    <div class="contact-box">
+      <div class="ct">Contact</div>
+      <strong>Ju Hu Soh</strong>
+      <small>CEO &amp; Co-founder</small>
+      <small style="margin-top:6px">juhu@letsrally.ai</small>
+      <small>+65 9724 2915</small>
+    </div>
+  </div>
+</div>
+
+</div><!-- /deck -->
+
+<script>
+// ---- PARTNER VERSIONING ----
+// URL: ?p=kjcba | ?p=alibabar | ?p=anywheel | (none = internal, all slides)
+const PARTNER_NAMES = {
+  kjcba:    'A Proposal for KJCBA',
+  alibabar: 'A Proposal for Alibabar',
+  anywheel: 'A Proposal for Anywheel',
+};
+const PARTNER_TAB = {
+  kjcba:    'kjcba',
+  alibabar: 'ali',
+  anywheel: 'any',
+};
+
+const p = new URLSearchParams(location.search).get('p') || '';
+
+// Filter slides by data-partners
+const allSlides = Array.from(document.querySelectorAll('.slide'));
+const slides = allSlides.filter(s => {
+  const attr = s.dataset.partners || 'all';
+  if (attr === 'all' || !p) return true;
+  return attr.split(',').map(v => v.trim()).includes(p);
+});
+
+// Hide non-visible slides from layout
+allSlides.forEach(s => {
+  if (!slides.includes(s)) s.style.display = 'none';
+});
+
+// Cover: show partner label
+if (p && PARTNER_NAMES[p]) {
+  const lbl = document.getElementById('partnerLabel');
+  if (lbl) { lbl.textContent = PARTNER_NAMES[p]; lbl.classList.add('visible'); }
+}
+
+// Partnership slide: auto-select tab, hide tab bar
+if (p && PARTNER_TAB[p]) {
+  const tabId = PARTNER_TAB[p];
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.pc').forEach(c => c.classList.remove('on'));
+  const tab = document.querySelector('[onclick="pt(\'' + tabId + '\',this)"]');
+  if (tab) tab.classList.add('on');
+  const content = document.getElementById('pc-' + tabId);
+  if (content) content.classList.add('on');
+  // Hide tab switcher — partner shouldn't see other proposals
+  const ptabs = document.getElementById('ptabs');
+  if (ptabs) ptabs.style.display = 'none';
+}
+
+// ---- NAVIGATION ----
+const N = slides.length;
+let cur = 0;
+const dotsEl = document.getElementById('dots');
+const ctrEl = document.getElementById('ctr');
+
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+ctrEl.textContent = '1 / ' + N;
+applyTheme(slides[0]);
+
+function applyTheme(slide) {
+  document.body.classList.toggle('chrome-light', slide.dataset.theme === 'light');
+}
+
+function restartChartAnims(slide) {
+  slide.querySelectorAll('[data-anim]').forEach(el => {
+    const a = el.dataset.anim;
+    el.style.animation = 'none';
+    el.getBoundingClientRect();
+    el.style.animation = a;
+  });
+}
+
+function go(n) {
+  slides[cur].classList.remove('active');
+  dotsEl.children[cur].classList.remove('on');
+  cur = (n + N) % N;
+  slides[cur].classList.add('active');
+  slides[cur].scrollTop = 0;
+  dotsEl.children[cur].classList.add('on');
+  ctrEl.textContent = (cur + 1) + ' / ' + N;
+  applyTheme(slides[cur]);
+  restartChartAnims(slides[cur]);
+}
+function nav(d) { go(cur + d); }
+
+// Keyboard
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nav(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nav(-1);
+});
+
+// Touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) nav(dx < 0 ? 1 : -1);
+}, {passive:true});
+
+// Partner tabs (manual switching — only shown in internal mode)
+function pt(id, tab) {
+  document.querySelectorAll('.ptab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.pc').forEach(c => c.classList.remove('on'));
+  tab.classList.add('on');
+  document.getElementById('pc-' + id).classList.add('on');
+}
+
+// Cover background map
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  const SEGMENT_COLORS = {
+    heritage_peranakan: '#C94F32',
+    heritage_hawker:    '#D9961F',
+    specialty_cafe:     '#1E7260',
+    bakery_dessert:     '#7B9E87',
+    bars_wine:          '#8B7050',
+    modern_restaurant:  '#4A6FA5',
+    hawker_centre:      '#8FBC8F',
+    gourmet_retail:     '#4682B4',
+    casual_dining:      '#888780'
+  };
+
+  const coverMap = L.map('coverMap', {
+    zoomControl: false,
+    attributionControl: false,
+    center: [1.3085, 103.9030],
+    zoom: 15
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20
+  }).addTo(coverMap);
+
+  fetch('https://letsrally-ai.github.io/rally-kjc/data/outlets.json')
+    .then(r => r.json())
+    .then(outlets => {
+      outlets.forEach(o => {
+        if (o.lat == null || o.lng == null) return;
+        const color = SEGMENT_COLORS[o.segment] || '#D9961F';
+        const marker = L.circleMarker([o.lat, o.lng], {
+          radius: 6,
+          fillColor: color,
+          color: 'rgba(255,255,255,0.25)',
+          weight: 1.5,
+          fillOpacity: 0.85
+        });
+        const seg = (o.segment || '').replace(/_/g, ' ');
+        let badges = '';
+        if (o.heritage) badges += '<span style="background:#FFF3E0;color:#E65100;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600;margin-right:3px">Heritage</span>';
+        if (o.michelin) badges += '<span style="background:#FFEBEE;color:#C62828;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:600">Michelin</span>';
+        marker.bindPopup(
+          '<div style="font-weight:600;font-size:14px;margin-bottom:4px">' + o.name + '</div>' +
+          '<div style="font-size:12px;color:#666;line-height:1.55">' +
+            '<span style="color:' + color + ';font-weight:600;text-transform:capitalize">' + seg + '</span>' +
+            (o.street ? ' · ' + o.street : '') +
+            (o.rating ? '<br>' + o.rating + '★ (' + o.rating_count + ' reviews)' : '') +
+            (o.avg_spend ? ' · ~$' + Math.round(o.avg_spend) : '') +
+          '</div>' +
+          (badges ? '<div style="margin-top:6px">' + badges + '</div>' : ''),
+          { maxWidth: 240 }
+        );
+        marker.addTo(coverMap);
+      });
+    });
+
+  // Re-render if Leaflet was initialised while slide was hidden
+  setTimeout(() => coverMap.invalidateSize(), 300);
+})();
+</script>
+</body>
+</html>
