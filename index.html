@@ -1432,10 +1432,12 @@
         padding: 6px 10px
       }
 
-      /* s1 cover — map is full-bleed background, vertical gradient fades as user scrolls */
+      /* s1 cover — sticky map stays pinned; content + gradient scroll up to reveal map */
       #s1 {
-        padding: 80px 24px 320px;
-        align-items: flex-start
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
+        justify-content: flex-start;
       }
 
       #s1::before {
@@ -1443,8 +1445,16 @@
       }
 
       #coverMap {
-        height: 100% !important;
-        bottom: auto !important
+        position: sticky !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: auto !important;
+        width: 100% !important;
+        height: 100vh !important;
+        flex-shrink: 0;
+        margin-bottom: -100vh;
+        z-index: 0;
       }
 
       .cover-dots {
@@ -1453,7 +1463,10 @@
       }
 
       .cover-inner {
-        max-width: 100%
+        position: relative;
+        z-index: 2;
+        max-width: 100%;
+        padding: 80px 24px 130vh;
       }
 
       .cover-inner .h1 {
