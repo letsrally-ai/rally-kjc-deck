@@ -276,10 +276,11 @@ body.chrome-light .dot.on{background:var(--coral)}
   .chrome-nav{bottom:18px;gap:12px}
   .nbtn{font-size:24px;padding:6px 10px}
 
-  /* s1 cover — map scrolls into view below content */
-  #s1{padding:72px 24px 40px;flex-direction:column;justify-content:flex-start;align-items:flex-start}
+  /* s1 cover — content first, map scrolls into view below */
+  #s1{padding:72px 24px 100px;flex-direction:column;justify-content:flex-start;align-items:flex-start}
   #s1::before{display:none}
-  #coverMap{position:static!important;height:420px;width:100%;flex-shrink:0;margin-top:20px;border-radius:14px;overflow:hidden;z-index:0}
+  #s1 .cover-inner{order:1}
+  #coverMap{order:2;position:static!important;height:min(360px,48vh);width:100%;flex-shrink:0;margin-top:24px;border-radius:14px;overflow:hidden;z-index:0;background:var(--navy)}
   .cover-dots{width:100%;opacity:.4}
   .cover-inner{max-width:100%}
   .cover-inner .h1{font-size:clamp(42px,11vw,58px)}
