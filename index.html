@@ -272,9 +272,10 @@ body.chrome-light .dot.on{background:var(--coral)}
   .chrome-logo{top:16px;left:16px}
   .chrome-counter{top:20px;right:16px}
   .chrome-nav{bottom:18px;gap:12px}
+  .nbtn{font-size:24px;padding:6px 10px}
 
   /* s1 cover */
-  #s1{padding:80px 24px 110px;justify-content:flex-start;align-items:flex-start}
+  #s1{padding:80px 24px 170px;justify-content:flex-start;align-items:flex-start}
   .cover-dots{width:100%;opacity:.4}
   .cover-inner{max-width:100%}
   .cover-inner .h1{font-size:clamp(42px,11vw,58px)}
@@ -285,40 +286,40 @@ body.chrome-light .dot.on{background:var(--coral)}
   /* s2 */
   #s2{flex-direction:column}
   .s2-left{padding:60px 24px 28px}
-  .s2-right{width:100%;padding:32px 24px 100px}
+  .s2-right{width:100%;padding:32px 24px 160px}
   .qm{font-size:48px}
   .quote-text{font-size:16px}
 
   /* s3 */
-  #s3{padding:88px 24px 100px;justify-content:flex-start}
+  #s3{padding:88px 24px 160px;justify-content:flex-start}
   .intel-grid{grid-template-columns:1fr}
   .compare-box{grid-template-columns:1fr 1fr}
   .output-cards{grid-template-columns:1fr 1fr}
 
   /* s4 */
-  #s4{padding:88px 24px 100px;justify-content:flex-start}
+  #s4{padding:88px 24px 160px;justify-content:flex-start}
   .cons-grid{grid-template-columns:1fr;gap:14px}
   .cc{padding:24px 20px}
 
   /* s5 */
   #s5{flex-direction:column}
-  .camp-left{width:100%;padding:72px 24px 24px}
+  .camp-left{width:100%;padding:72px 24px 84px}
   .camp-right{flex:none;height:280px;width:100%}
   .camp-right::before{width:0}
   .camp-stats{grid-template-columns:1fr 1fr}
 
   /* s6 */
-  #s6{padding:88px 24px 100px;justify-content:flex-start}
+  #s6{padding:88px 24px 160px;justify-content:flex-start}
   .merch-grid{grid-template-columns:1fr;gap:24px}
   .bfts{grid-template-columns:1fr 1fr}
 
   /* s7 */
-  #s7{padding:88px 24px 100px}
+  #s7{padding:88px 24px 160px}
   .ptabs{flex-wrap:wrap}
   .pl{grid-template-columns:1fr}
 
   /* s8 */
-  #s8{padding:88px 24px 100px;justify-content:flex-start}
+  #s8{padding:88px 24px 160px;justify-content:flex-start}
   .priv-grid{grid-template-columns:1fr}
   .contact-box{width:100%}
 }
@@ -913,12 +914,13 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nav(-1);
 });
 
-// Touch swipe
-let tx = 0;
-document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+// Touch swipe — only trigger on dominant horizontal movement
+let tx = 0, ty = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive:true});
 document.addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - tx;
-  if (Math.abs(dx) > 50) nav(dx < 0 ? 1 : -1);
+  const dy = e.changedTouches[0].clientY - ty;
+  if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) nav(dx < 0 ? 1 : -1);
 }, {passive:true});
 
 // Partner tabs (manual switching — only shown in internal mode)
