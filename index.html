@@ -1427,12 +1427,20 @@
 
       .chrome-nav {
         bottom: 18px;
-        gap: 12px
+        gap: 12px;
+        background: rgba(13, 28, 46, .75);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+      }
+
+      body.chrome-light .chrome-nav {
+        background: rgba(242, 239, 227, .83);
       }
 
       .nbtn {
         font-size: 24px;
-        padding: 6px 10px
+        padding: 6px 10px;
+        transform: translateY(-1px);
       }
 
       /* s1 cover — sticky map stays pinned; content + gradient scroll up to reveal map */
@@ -2220,7 +2228,7 @@
         <div class="pl">
           <div class="pi-box">
             <div class="pi-eye">Anchor Merchant Partner</div>
-            <h3>Alibabar Hawker Bar, East Coast</h3>
+            <h3>Alibabar — Diner's Quest Hub</h3>
             <p class="intro">As a beloved KJC institution, Alibabar is the perfect Quest Hub — where diners begin their
               trail, earn bonus rewards, and discover the wider district.</p>
             <div class="bl">
