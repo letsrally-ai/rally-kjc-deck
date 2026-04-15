@@ -16,10 +16,8 @@
   No param = internal (all slides visible)
 
   Slide visibility:
-    s1–s5  → all partners
-    s6     → kjcba, alibabar  (merchant onboarding; not relevant for Anywheel platform partner)
-    s7     → all (auto-selects partner tab, hides others)
-    s8     → all
+    s1–s8  → all partners
+    s7     → auto-selects partner tab, hides others
 */
 
     * {
@@ -46,7 +44,12 @@
       height: 100%;
       overflow: hidden;
       background: var(--navy);
-      font-family: 'DM Sans', sans-serif
+      font-family: 'DM Sans', sans-serif;
+      transition: background .3s
+    }
+
+    body.chrome-light {
+      background: #F2EFE3
     }
 
     /* ---- DECK SHELL ---- */
@@ -1533,6 +1536,16 @@
         grid-template-columns: 1fr
       }
 
+      /* s3 scard — swap italic Playfair for readable sans on mobile */
+      .scard .insight-n {
+        font-family: 'DM Sans', sans-serif;
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+      }
+
       /* s4 */
       #s4 {
         padding: 88px 24px 160px;
@@ -1623,7 +1636,8 @@
       #s5 .camp-right {
         height: auto;
         overflow: visible;
-        margin-top: -40px
+        margin-top: -40px;
+        padding-bottom: 120px
       }
 
       #s5 .camp-right img {
@@ -2029,7 +2043,7 @@
     <!-- =========================================================
      SLIDE 6: MERCHANTS  (kjcba, alibabar — not anywheel)
      ========================================================= -->
-    <div class="slide" id="s6" data-partners="kjcba,alibabar" data-theme="light">
+    <div class="slide" id="s6" data-partners="kjcba,alibabar,anywheel" data-theme="light">
       <div class="eyebrow">For Merchants</div>
       <h2 class="h2">Zero friction, zero cost</h2>
       <div class="merch-grid">
@@ -2453,10 +2467,11 @@
       if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nav(-1);
     });
 
-    // Touch swipe — only trigger on dominant horizontal movement
+    // Touch swipe — desktop/tablet only; disabled on mobile to prevent accidental nav
     let tx = 0, ty = 0;
     document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
     document.addEventListener('touchend', e => {
+      if (window.matchMedia('(max-width:767px)').matches) return;
       const dx = e.changedTouches[0].clientX - tx;
       const dy = e.changedTouches[0].clientY - ty;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) nav(dx < 0 ? 1 : -1);
