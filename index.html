@@ -2052,7 +2052,7 @@
     <!-- =========================================================
      SLIDE 6: MERCHANTS  (kjcba, alibabar — not anywheel)
      ========================================================= -->
-    <div class="slide" id="s6" data-partners="kjcba,alibabar,anywheel" data-theme="light">
+    <div class="slide" id="s6" data-partners="kjcba,alibabar,anywheel,grab" data-theme="light">
       <div class="eyebrow">For Merchants</div>
       <h2 class="h2">Zero friction, zero cost</h2>
       <div class="merch-grid">
@@ -2174,6 +2174,7 @@
         <div class="ptab on" onclick="pt('kjcba',this)">KJCBA</div>
         <div class="ptab" onclick="pt('ali',this)">Alibabar</div>
         <div class="ptab" onclick="pt('any',this)">Anywheel</div>
+        <div class="ptab" onclick="pt('grab',this)">Grab Holdings</div>
       </div>
 
       <!-- KJCBA -->
@@ -2363,6 +2364,70 @@
         </div>
       </div>
 
+      <!-- GRAB HOLDINGS -->
+      <div class="pc" id="pc-grab">
+        <div class="pl">
+          <div class="pi-box">
+            <div class="pi-eye">Ecosystem Partner</div>
+            <h3>Grab Holdings — Community × Commerce</h3>
+            <p class="intro">Rally activates dining demand in the precinct. Grab captures it across merchants and
+              drivers. One campaign, both sides of the platform lifted together.</p>
+            <div class="bl">
+              <div class="bli"><span class="bli-ic">&#128200;</span>
+                <div>
+                  <h6>Merchant sales uplift &rarr; driver earnings uplift</h6>
+                  <p>Rally drives in-person dining into KJC F&B merchants. Stronger merchant momentum converts into
+                    GrabFood order volume and delivery-partner earnings in the same precinct</p>
+                </div>
+              </div>
+              <div class="bli"><span class="bli-ic">&#128154;</span>
+                <div>
+                  <h6>GrabForGood &times; Community Care proof point</h6>
+                  <p>KJC is campaign #1 of Rally's district-by-district Singapore rollout. Every district strengthens
+                    hyperlocal F&B ecosystems and the driver-partners who serve them — measurable community impact,
+                    not PR gloss</p>
+                </div>
+              </div>
+              <div class="bli"><span class="bli-ic">&#127836;</span>
+                <div>
+                  <h6>Extends Grab &times; Enterprise Singapore's Dine Out model</h6>
+                  <p>Rally's consumer outreach layers on top of Grab's precinct Dine Out playbook (Jalan Besar, Holland
+                    Village, Tanjong Pagar). KJC becomes the next precinct — Rally activates demand, Grab captures it
+                  </p>
+                </div>
+              </div>
+              <div class="bli"><span class="bli-ic">&#128161;</span>
+                <div>
+                  <h6>District F&B intelligence for Grab Merchant Centre</h6>
+                  <p>Every KJC merchant who joins receives a Rally district report — sentiment, peak hours, segments,
+                    benchmarks. Distributable through Merchant Centre as a value-add for Grab's SME base</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="ask-box">
+              <h5>What we ask from Grab</h5>
+              <div class="ai xl"><span class="ai-ic">&#128241;</span>
+                <div><strong>Drive consumer awareness through Grab's channels</strong><span>In-app banners, push
+                    notifications, and email to Grab users in Singapore during the 16-day window — the single biggest
+                    lever to scale past the 1,000-diner target</span></div>
+              </div>
+              <div class="ai xl"><span class="ai-ic">&#128757;</span>
+                <div><strong>Offline &amp; driver touchpoints</strong><span>Campaign collateral at Grab driver hubs,
+                    merchant standees, and co-branded out-of-home in the KJC precinct — turn Grab's physical footprint
+                    into campaign marketing</span></div>
+              </div>
+              <div class="ai xl"><span class="ai-ic">&#127873;</span>
+                <div><strong>Ecosystem perks for participating merchants</strong><span>A Grab Merchant Centre
+                    onboarding track, digital-growth tools, or fee-concession window for KJC merchants who join — make
+                    Rally participation a doorway into Grab's ecosystem</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="s7-contact">
         <div class="contact-box">
           <div class="ct">Contact</div>
@@ -2379,16 +2444,18 @@
 
   <script>
     // ---- PARTNER VERSIONING ----
-    // URL: ?p=kjcba | ?p=alibabar | ?p=anywheel | (none = internal, all slides)
+    // URL: ?p=kjcba | ?p=alibabar | ?p=anywheel | ?p=grab | (none = internal, all slides)
     const PARTNER_NAMES = {
       kjcba: 'A Proposal for KJCBA',
       alibabar: 'A Proposal for Alibabar',
       anywheel: 'A Proposal for Anywheel',
+      grab: 'A Proposal for Grab Holdings',
     };
     const PARTNER_TAB = {
       kjcba: 'kjcba',
       alibabar: 'ali',
       anywheel: 'any',
+      grab: 'grab',
     };
 
     const p = new URLSearchParams(location.search).get('p') || '';
